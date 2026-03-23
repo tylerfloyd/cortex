@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     .from(itemRelations)
     .where(
       and(
-        eq(itemRelations.relationType, 'similar'),
+        eq(itemRelations.relationType, 'related'),
         gt(itemRelations.similarity, SIMILARITY_THRESHOLD)
       )
     )
