@@ -1,4 +1,4 @@
-const URL_REGEX = /https?:\/\/[^\s<>"\\]]+/g;
+const URL_REGEX = /https?:\/\/[^\s<>"\\]+/g;
 
 // Extract all HTTP/HTTPS URLs from a Discord message content string
 export function extractUrls(content: string): string[] {
