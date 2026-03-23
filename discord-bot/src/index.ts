@@ -48,6 +48,14 @@ client.on(Events.MessageCreate, async (message) => {
     if (handled) return;
   }
 
+  // If an allowlist is configured, ignore URLs from other channels
+  if (
+    config.allowedChannelIds.length > 0 &&
+    !config.allowedChannelIds.includes(message.channelId)
+  ) {
+    return;
+  }
+
   const urls = extractUrls(message.content);
   if (urls.length === 0) return;
 
