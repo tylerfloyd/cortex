@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cortex Capture — Settings</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-bg: #0f172a;
+      --color-surface: #1e293b;
+      --color-border: #334155;
+      --color-text: #f1f5f9;
+      --color-text-muted: #94a3b8;
+      --color-accent: #6366f1;
+      --color-accent-hover: #818cf8;
+      --color-success: #22c55e;
+      --color-error: #ef4444;
+      --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font);
+      font-size: 14px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 48px 16px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon { font-size: 28px; color: var(--color-accent); }
+    .logo-text { font-size: 20px; font-weight: 700; }
+    .logo-sub  { font-size: 13px; color: var(--color-text-muted); margin-left: auto; }
+
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-muted);
+      margin-bottom: 18px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="password"] {
+      width: 100%;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      color: var(--color-text);
+      font-family: var(--font);
+      font-size: 13px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus {
+      border-color: var(--color-accent);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 5px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 20px;
+      border-radius: var(--radius);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s, opacity 0.15s;
+    }
+
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-primary {
+      background: var(--color-accent);
+      color: #fff;
+      flex: 1;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--color-accent-hover); }
+
+    .btn-secondary {
+      background: var(--color-bg);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      flex: 1;
+    }
+    .btn-secondary:hover:not(:disabled) {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    .status-msg {
+      font-size: 13px;
+      margin-top: 12px;
+      min-height: 20px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      display: none;
+    }
+
+    .status-msg.visible { display: block; }
+    .status-msg.success { background: rgba(34,197,94,0.12); color: var(--color-success); border: 1px solid rgba(34,197,94,0.25); }
+    .status-msg.error   { background: rgba(239,68,68,0.12);  color: var(--color-error);   border: 1px solid rgba(239,68,68,0.25); }
+    .status-msg.info    { background: rgba(99,102,241,0.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.25); }
+
+    .saved-badge {
+      display: none;
+      font-size: 11px;
+      color: var(--color-success);
+      margin-top: 6px;
+    }
+    .saved-badge.visible { display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <span class="logo-icon">◆</span>
+      <span class="logo-text">Cortex</span>
+      <span class="logo-sub">Extension Settings</span>
+    </header>
+
+    <div class="card">
+      <div class="card-title">API Configuration</div>
+
+      <div class="field">
+        <label for="api-url">API URL</label>
+        <input type="url" id="api-url" placeholder="https://your-cortex-instance.vercel.app" autocomplete="off" />
+        <div class="hint">The root URL of your Cortex Next.js deployment (no trailing slash).</div>
+      </div>
+
+      <div class="field">
+        <label for="api-key">API Key</label>
+        <input type="password" id="api-key" placeholder="••••••••••••••••" autocomplete="off" />
+        <div class="hint">Found in your Cortex admin settings or environment variable <code>CORTEX_API_KEY</code>.</div>
+      </div>
+
+      <div class="btn-row">
+        <button id="btn-save" class="btn btn-primary">Save Settings</button>
+        <button id="btn-test" class="btn btn-secondary">Test Connection</button>
+      </div>
+
+      <div id="save-status" class="status-msg"></div>
+      <div id="test-status" class="status-msg"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Saved URL Cache</div>
+      <p style="font-size:13px; color: var(--color-text-muted); margin-bottom:14px;">
+        The extension keeps a local list of URLs you've saved so it can show the badge indicator
+        without making an API call on every page load.
+      </p>
+      <button id="btn-clear-cache" class="btn btn-secondary" style="max-width:200px;">Clear Cache</button>
+      <div id="cache-status" class="status-msg"></div>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
