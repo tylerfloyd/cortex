@@ -34,7 +34,8 @@ export async function categorizeContent(
   }
 
   try {
-    const parsed = JSON.parse(responseText) as {
+    const jsonText = responseText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    const parsed = JSON.parse(jsonText) as {
       category?: string;
       tags?: string[];
       confidence?: number;

@@ -42,7 +42,8 @@ export async function summarizeContent(rawContent: string): Promise<SummarizeRes
   }
 
   try {
-    const parsed = JSON.parse(responseText) as {
+    const jsonText = responseText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    const parsed = JSON.parse(jsonText) as {
       summary?: string;
       key_insights?: string[];
       suggested_title?: string | null;

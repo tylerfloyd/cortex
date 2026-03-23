@@ -104,12 +104,12 @@ export async function POST(request: NextRequest) {
       return newItem;
     });
   } catch (err: unknown) {
-    if (
-      typeof err === 'object' &&
-      err !== null &&
-      'code' in err &&
-      (err as { code: string }).code === '23505'
-    ) {
+    const pgCode =
+      typeof err === 'object' && err !== null
+        ? (err as Record<string, unknown>).code ??
+          ((err as Record<string, unknown>).cause as Record<string, unknown> | undefined)?.code
+        : undefined;
+    if (pgCode === '23505') {
       return NextResponse.json(
         { error: 'Item already exists' },
         { status: 409 }
