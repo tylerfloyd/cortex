@@ -6,6 +6,11 @@ export const config = {
   apiKey: process.env.API_KEY ?? '',
   pollTimeoutMs: parseInt(process.env.POLL_TIMEOUT_MS ?? '60000', 10),
   pollIntervalMs: parseInt(process.env.POLL_INTERVAL_MS ?? '3000', 10),
+  // Optional comma-separated list of channel IDs to watch for URLs.
+  // If empty, all channels are watched (original behavior).
+  allowedChannelIds: process.env.ALLOWED_CHANNELS
+    ? process.env.ALLOWED_CHANNELS.split(',').map((id) => id.trim()).filter(Boolean)
+    : [],
 };
 
 // Validate required config at startup
