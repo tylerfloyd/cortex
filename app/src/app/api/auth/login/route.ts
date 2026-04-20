@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { timingSafeEqual } from 'crypto';
 import { createSession } from '@/lib/auth/session';
 
+function getBaseUrl(request: NextRequest): string {
+  const host = request.headers.get('host') ?? request.nextUrl.host;
+  const proto = request.headers.get('x-forwarded-proto') ?? 'http';
+  return `${proto}://${host}`;
+}
+
 export async function POST(request: NextRequest) {
   const authPassword = process.env.AUTH_PASSWORD;
   const authSecret = process.env.AUTH_SECRET;
@@ -13,24 +19,16 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const baseUrl = getBaseUrl(request);
   const formData = await request.formData();
   const password = formData.get('password');
   const next = formData.get('next');
 
   const rawNext = typeof next === 'string' ? next : '';
-  let redirectTo = '/';
-  if (rawNext.startsWith('/') && !rawNext.startsWith('//')) {
-    try {
-      const resolved = new URL(rawNext, request.url);
-      if (resolved.origin === new URL(request.url).origin) {
-        redirectTo = rawNext;
-      }
-    } catch {
-      // malformed URL — fall through to '/'
-    }
-  }
+  const redirectTo =
+    rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
 
-  const failUrl = new URL('/login', request.url);
+  const failUrl = new URL('/login', baseUrl);
   failUrl.searchParams.set('error', '1');
   failUrl.searchParams.set('next', redirectTo);
 
@@ -58,7 +56,7 @@ export async function POST(request: NextRequest) {
   }
 
   const sessionValue = createSession();
-  const response = NextResponse.redirect(new URL(redirectTo, request.url), 303);
+  const response = NextResponse.redirect(new URL(redirectTo, baseUrl), 303);
   response.cookies.set('cortex-session', sessionValue, {
     httpOnly: true,
     sameSite: 'strict',
