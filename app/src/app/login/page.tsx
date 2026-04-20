@@ -7,10 +7,18 @@ export default async function LoginPage({
 }) {
   const { error, next } = await searchParams
 
-  const nextValue =
-    typeof next === 'string' && next.startsWith('/') && !next.startsWith('//')
-      ? next
-      : '/'
+  let nextValue = '/';
+  if (typeof next === 'string' && next.startsWith('/') && !next.startsWith('//')) {
+    try {
+      // Resolve against a dummy base and verify no host was extracted
+      const resolved = new URL(next, 'http://localhost');
+      if (resolved.host === 'localhost') {
+        nextValue = next;
+      }
+    } catch {
+      // malformed — keep '/'
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">

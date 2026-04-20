@@ -17,10 +17,18 @@ export async function POST(request: NextRequest) {
   const password = formData.get('password');
   const next = formData.get('next');
 
-  const redirectTo =
-    typeof next === 'string' && next.startsWith('/') && !next.startsWith('//')
-      ? next
-      : '/';
+  const rawNext = typeof next === 'string' ? next : '';
+  let redirectTo = '/';
+  if (rawNext.startsWith('/') && !rawNext.startsWith('//')) {
+    try {
+      const resolved = new URL(rawNext, request.url);
+      if (resolved.origin === new URL(request.url).origin) {
+        redirectTo = rawNext;
+      }
+    } catch {
+      // malformed URL — fall through to '/'
+    }
+  }
 
   const failUrl = new URL('/login', request.url);
   failUrl.searchParams.set('error', '1');
