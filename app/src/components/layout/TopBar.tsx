@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Menu, Sun, Moon, Monitor } from 'lucide-react'
+import { Menu, Sun, Moon, Monitor, LogOut } from 'lucide-react'
 
 type TopBarProps = {
   onMenuClick: () => void
@@ -97,6 +97,19 @@ export function TopBar({ onMenuClick }: TopBarProps) {
       >
         <ThemeIcon />
       </Button>
+
+      {/* Logout */}
+      <form method="POST" action="/api/auth/logout">
+        <Button
+          type="submit"
+          variant="ghost"
+          size="icon"
+          aria-label="Sign out"
+          title="Sign out"
+        >
+          <LogOut className="size-4" />
+        </Button>
+      </form>
     </header>
   )
 }
