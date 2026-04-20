@@ -1,6 +1,6 @@
 import type { ConnectionOptions } from 'bullmq';
 
-if (!process.env.REDIS_URL) {
+if (!process.env.REDIS_URL && process.env.NEXT_PHASE !== 'phase-production-build') {
   throw new Error('REDIS_URL environment variable is not set');
 }
 
@@ -29,4 +29,4 @@ function parseRedisUrl(url: string): ConnectionOptions {
   return options;
 }
 
-export const redisConnection: ConnectionOptions = parseRedisUrl(process.env.REDIS_URL);
+export const redisConnection: ConnectionOptions = parseRedisUrl(process.env.REDIS_URL ?? 'redis://placeholder');
