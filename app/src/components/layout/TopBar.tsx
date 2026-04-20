@@ -14,10 +14,9 @@ type TopBarProps = {
 export function TopBar({ onMenuClick }: TopBarProps) {
   const router = useRouter()
   const [query, setQuery] = useState('')
-  const { theme, setTheme, resolvedTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Avoid hydration mismatch for theme icon
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -55,7 +54,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
   }
 
   return (
-    <header className="flex h-14 items-center gap-3 border-b border-border bg-background px-4">
+    <header className="flex h-14 items-center gap-3 border-b border-sidebar-border bg-sidebar px-4">
       {/* Hamburger — mobile only */}
       <Button
         variant="ghost"
@@ -67,22 +66,22 @@ export function TopBar({ onMenuClick }: TopBarProps) {
         <Menu className="size-5" />
       </Button>
 
-      {/* App name — mobile only (sidebar is hidden) */}
-      <span className="text-base font-bold tracking-tight md:hidden">
-        Cortex
+      {/* App name — mobile only */}
+      <span className="font-mono text-sm font-bold tracking-widest text-primary md:hidden">
+        CORTEX
       </span>
 
       {/* Global search */}
       <form
         onSubmit={handleSearch}
-        className="mx-auto flex w-full max-w-md items-center"
+        className="mx-auto flex w-full max-w-lg items-center"
       >
         <Input
           type="search"
           placeholder="Search…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full"
+          className="h-10 w-full"
           aria-label="Global search"
         />
       </form>
