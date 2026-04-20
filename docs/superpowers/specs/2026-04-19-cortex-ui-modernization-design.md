@@ -189,6 +189,24 @@ At 5r/m with burst=3, an attacker gets 3 immediate attempts then one attempt eve
 | `app/src/app/(dashboard)/page.tsx` | Accent borders, badge styling, hover states |
 | `nginx.conf` | Login-specific rate limit zone + location block |
 
+## 7. Auth Middleware Bug Fix
+
+**Problem:** The auth middleware logic is in `src/proxy.ts` but Next.js only recognizes `src/middleware.ts` (or `middleware.ts` at the project root). The middleware is not running — the app is currently unprotected and navigation behaves unexpectedly because no session check is happening.
+
+**Root cause:** A recent commit renamed the middleware export to `proxy` but left the file as `proxy.ts` rather than `middleware.ts`.
+
+**Fix:** Create `src/middleware.ts` that re-exports `proxy` as the default export and re-exports `config` — Next.js picks this up automatically.
+
+```ts
+export { proxy as default, config } from './proxy'
+```
+
+This is a one-line file. The existing `src/proxy.ts` stays as-is (keeps the logic separate and testable).
+
+**Files changed:** `app/src/middleware.ts` (new file, 1 line)
+
+---
+
 ## Out of Scope
 
 - Layout restructuring on any page
