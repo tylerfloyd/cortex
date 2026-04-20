@@ -28,9 +28,7 @@ services:
     restart: unless-stopped
 
   app:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
+    image: ghcr.io/tylerfloyd/cortex-app:latest
     environment:
       DATABASE_URL: postgresql://reader:${DB_PASSWORD}@db:5432/reader_organizer
       REDIS_URL: redis://redis:6379
@@ -58,9 +56,7 @@ services:
     restart: unless-stopped
 
   worker:
-    build:
-      context: ./app
-      dockerfile: Dockerfile.worker
+    image: ghcr.io/tylerfloyd/cortex-worker:latest
     environment:
       DATABASE_URL: postgresql://reader:${DB_PASSWORD}@db:5432/reader_organizer
       REDIS_URL: redis://redis:6379
@@ -76,7 +72,7 @@ services:
     restart: unless-stopped
 
   discord-bot:
-    build: ./discord-bot
+    image: ghcr.io/tylerfloyd/cortex-discord-bot:latest
     environment:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       API_URL: http://app:3000
