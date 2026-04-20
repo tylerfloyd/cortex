@@ -5,6 +5,7 @@ import { handleUrlMessage } from './message-handler.js';
 import { handleCommand, handleSlashCommand, registerSlashCommands } from './commands.js';
 import { getCategoryForChannel } from './channel-mapper.js';
 import { RateLimiter } from './rate-limiter.js';
+import { catchUpOnMissedMessages } from './catchup.js';
 
 const client = new Client({
   intents: [
@@ -36,6 +37,11 @@ client.once(Events.ClientReady, async (readyClient) => {
     console.error('[bot] Failed to register slash commands:', err);
     // Don't crash — bot can still work without slash commands
   }
+
+  // Scan allowed channels for messages the bot missed while offline
+  catchUpOnMissedMessages(readyClient).catch((err) => {
+    console.error('[bot] Catch-up scan failed:', err);
+  });
 });
 
 client.on(Events.MessageCreate, async (message) => {

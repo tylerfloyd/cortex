@@ -97,6 +97,16 @@ These timeouts are configurable via environment variables on the `discord-bot` s
 | `POLL_TIMEOUT_MS` | `60000` | Maximum time (ms) to wait for processing to complete |
 | `POLL_INTERVAL_MS` | `3000` | How often (ms) to check processing status |
 
+### Missed-message catch-up
+
+When the bot starts (or restarts), it automatically scans each channel listed in `ALLOWED_CHANNELS` for messages it missed while offline. Any message that contains a URL and has no ✅ or ❌ reaction from the bot is reprocessed.
+
+| Variable | Default | Description |
+|---|---|---|
+| `CATCHUP_LIMIT` | `100` | Number of recent messages per channel to scan on startup |
+
+Catch-up only runs when `ALLOWED_CHANNELS` is configured. Without an explicit channel list there is no feasible scope to scan.
+
 ---
 
 ## Commands
