@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
 
   const failUrl = new URL('/login', baseUrl);
-  failUrl.searchParams.set('error', '1');
+  failUrl.searchParams.set('error', 'wrong');
   failUrl.searchParams.set('next', redirectTo);
 
   if (typeof password !== 'string' || password.length === 0) {

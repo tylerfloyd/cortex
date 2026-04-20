@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { validateApiKey } from '@/lib/auth/api-key';
 
@@ -38,3 +38,46 @@ describe('validateApiKey', () => {
     expect(body.error).toMatch(/unauthorized/i);
   });
 });
+
+describe('POST /api/auth/login', () => {
+  beforeEach(() => {
+    process.env.AUTH_PASSWORD = 'correct-password'
+    process.env.AUTH_SECRET = 'test-secret-32-bytes-long-xxxxxxxx'
+  })
+
+  afterEach(() => {
+    delete process.env.AUTH_PASSWORD
+    delete process.env.AUTH_SECRET
+  })
+
+  it('redirects with error=wrong on incorrect password', async () => {
+    const { POST } = await import('@/app/api/auth/login/route')
+    const form = new FormData()
+    form.append('password', 'wrong-password')
+    const req = new NextRequest('http://localhost/api/auth/login', {
+      method: 'POST',
+      body: form,
+      headers: { host: 'localhost', 'x-forwarded-proto': 'http' },
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(303)
+    const location = res.headers.get('location') ?? ''
+    expect(location).toContain('error=wrong')
+    expect(location).not.toContain('error=1')
+  })
+
+  it('redirects with error=wrong on empty password', async () => {
+    const { POST } = await import('@/app/api/auth/login/route')
+    const form = new FormData()
+    form.append('password', '')
+    const req = new NextRequest('http://localhost/api/auth/login', {
+      method: 'POST',
+      body: form,
+      headers: { host: 'localhost', 'x-forwarded-proto': 'http' },
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(303)
+    const location = res.headers.get('location') ?? ''
+    expect(location).toContain('error=wrong')
+  })
+})
