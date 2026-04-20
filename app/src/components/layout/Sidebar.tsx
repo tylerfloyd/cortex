@@ -2,6 +2,17 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import {
+  LayoutDashboard,
+  BookOpen,
+  Inbox,
+  Search,
+  BarChart2,
+  Tag,
+  ShieldCheck,
+  Settings2,
+  type LucideIcon,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type Category = {
@@ -17,15 +28,15 @@ type SidebarProps = {
   onClose: () => void
 }
 
-const navLinks = [
-  { href: '/', label: 'Dashboard', emoji: '🏠' },
-  { href: '/library', label: 'Library', emoji: '📚' },
-  { href: '/inbox', label: 'Inbox', emoji: '📥' },
-  { href: '/search', label: 'Search', emoji: '🔍' },
-  { href: '/analytics', label: 'Analytics', emoji: '📊' },
-  { href: '/taxonomy', label: 'Taxonomy', emoji: '🏷️' },
-  { href: '/hygiene', label: 'Data Hygiene', emoji: '🧹' },
-  { href: '/settings', label: 'Settings', emoji: '⚙️' },
+const navLinks: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/library', label: 'Library', icon: BookOpen },
+  { href: '/inbox', label: 'Inbox', icon: Inbox },
+  { href: '/search', label: 'Search', icon: Search },
+  { href: '/analytics', label: 'Analytics', icon: BarChart2 },
+  { href: '/taxonomy', label: 'Taxonomy', icon: Tag },
+  { href: '/hygiene', label: 'Data Hygiene', icon: ShieldCheck },
+  { href: '/settings', label: 'Settings', icon: Settings2 },
 ]
 
 export function Sidebar({ categories, isOpen, onClose }: SidebarProps) {
@@ -45,21 +56,21 @@ export function Sidebar({ categories, isOpen, onClose }: SidebarProps) {
       {/* Sidebar panel */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-30 flex w-60 flex-col border-r border-border bg-sidebar transition-transform duration-200',
+          'fixed inset-y-0 left-0 z-30 flex w-60 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-200',
           'md:static md:translate-x-0 md:z-auto',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         {/* Logo / App name */}
         <div className="flex h-14 items-center border-b border-sidebar-border px-4">
-          <span className="text-lg font-bold tracking-tight text-sidebar-foreground">
-            Cortex
+          <span className="font-mono text-sm font-bold tracking-widest text-primary">
+            CORTEX
           </span>
         </div>
 
         {/* Navigation */}
         <nav className="flex flex-col gap-0.5 px-2 py-3">
-          {navLinks.map(({ href, label, emoji }) => {
+          {navLinks.map(({ href, label, icon: Icon }) => {
             const isActive =
               href === '/'
                 ? pathname === '/'
@@ -77,7 +88,7 @@ export function Sidebar({ categories, isOpen, onClose }: SidebarProps) {
                     : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                 )}
               >
-                <span aria-hidden="true">{emoji}</span>
+                <Icon className="size-4 shrink-0" aria-hidden="true" />
                 {label}
               </Link>
             )
