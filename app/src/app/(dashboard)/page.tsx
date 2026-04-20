@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { SourceIcon } from '@/components/items/SourceIcon'
 import { relativeTime, truncateUrl } from '@/lib/format'
+import { cn } from '@/lib/utils'
 
 async function getDashboardData() {
   try {
@@ -257,7 +258,7 @@ export default async function DashboardPage() {
 
       {/* Stats bar */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <Card size="sm">
+        <Card size="sm" className="border-l-2 border-l-primary">
           <CardHeader>
             <CardTitle className="text-xs text-muted-foreground uppercase tracking-wide">Total Items</CardTitle>
           </CardHeader>
@@ -266,7 +267,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card size="sm">
+        <Card size="sm" className="border-l-2 border-l-primary">
           <CardHeader>
             <CardTitle className="text-xs text-muted-foreground uppercase tracking-wide">This Week</CardTitle>
           </CardHeader>
@@ -345,7 +346,7 @@ export default async function DashboardPage() {
                   href={`/library/${item.id}`}
                   className="block group"
                 >
-                  <Card className="h-full transition-shadow group-hover:shadow-md">
+                  <Card className="h-full transition-all group-hover:shadow-md group-hover:border-primary/40">
                     <CardHeader>
                       <div className="flex items-start gap-2">
                         <SourceIcon sourceType={item.sourceType} className="mt-0.5 shrink-0" />
@@ -404,7 +405,7 @@ export default async function DashboardPage() {
                   href={`/library/${item.id}`}
                   className="block group"
                 >
-                  <Card className="h-full transition-shadow group-hover:shadow-md">
+                  <Card className="h-full transition-all group-hover:shadow-md group-hover:border-primary/40">
                     <CardHeader>
                       <div className="flex items-start gap-2">
                         <SourceIcon sourceType={item.sourceType} className="mt-0.5 shrink-0" />
@@ -458,7 +459,10 @@ export default async function DashboardPage() {
                       <span className="text-sm truncate flex-1">{displayTitle}</span>
                       <Badge
                         variant={item.processingStatus === 'processing' ? 'default' : 'outline'}
-                        className="shrink-0 capitalize"
+                        className={cn(
+                          'shrink-0 capitalize',
+                          item.processingStatus === 'processing' && 'bg-primary/20 text-primary border-primary/40'
+                        )}
                       >
                         {item.processingStatus}
                       </Badge>
