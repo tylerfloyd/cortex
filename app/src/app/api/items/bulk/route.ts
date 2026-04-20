@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { eq, inArray, sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import { items, categories, tags, itemTags } from '@/lib/db/schema';
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
         await db
           .delete(itemTags)
           .where(
-            sql`${itemTags.itemId} = ANY(${item_ids}::uuid[]) AND ${itemTags.tagId} = ANY(${tagIdsToRemove}::uuid[])`
+            and(inArray(itemTags.itemId, item_ids), inArray(itemTags.tagId, tagIdsToRemove))
           );
       }
     }

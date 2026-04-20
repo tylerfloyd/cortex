@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { eq, or, sql } from 'drizzle-orm';
+import { eq, or, sql, inArray } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { items, itemRelations } from '@/lib/db/schema';
 import { validateApiKey } from '@/lib/auth/api-key';
@@ -66,7 +66,7 @@ export async function GET(
       summary: items.summary,
     })
     .from(items)
-    .where(sql`${items.id} = ANY(${neighbourIds}::uuid[])`);
+    .where(inArray(items.id, neighbourIds));
 
   const result = neighbourRows
     .map((row) => {

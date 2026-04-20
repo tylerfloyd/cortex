@@ -166,7 +166,7 @@ async function getLibraryItems(params: {
         })
         .from(itemTags)
         .innerJoin(tags, eq(itemTags.tagId, tags.id))
-        .where(sql`${itemTags.itemId} = ANY(${itemIds}::uuid[])`)
+        .where(inArray(itemTags.itemId, itemIds))
       for (const t of tagRows) {
         if (!tagMap.has(t.itemId)) tagMap.set(t.itemId, [])
         tagMap.get(t.itemId)!.push({ name: t.tagName, slug: t.tagSlug })

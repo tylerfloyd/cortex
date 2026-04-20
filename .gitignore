@@ -19,6 +19,23 @@ build/
 # Config with secrets
 app/data/config.json
 
+# SSH keys
+cortex
+cortex.pub
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# Personal knowledge library (user content, not part of the open-source app)
+app/knowledge/**/*.md
+app/knowledge/_index.json
+
+# Database dumps and exports
+*.sql
+*.sql.gz
+cortex_export*
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

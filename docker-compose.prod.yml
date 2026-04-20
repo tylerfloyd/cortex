@@ -1,0 +1,101 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: reader_organizer
+      POSTGRES_USER: reader
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reader -d reader_organizer"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    # No ports exposed — only accessible within Docker network
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --maxmemory 128mb --maxmemory-policy noeviction
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://reader:${DB_PASSWORD}@db:5432/reader_organizer
+      REDIS_URL: redis://redis:6379
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      JINA_API_KEY: ${JINA_API_KEY}
+      API_KEY: ${API_KEY}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      NODE_ENV: production
+      HOSTNAME: "0.0.0.0"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - knowledge_files:/app/knowledge
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.worker
+    environment:
+      DATABASE_URL: postgresql://reader:${DB_PASSWORD}@db:5432/reader_organizer
+      REDIS_URL: redis://redis:6379
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      JINA_API_KEY: ${JINA_API_KEY}
+      API_KEY: ${API_KEY}
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  discord-bot:
+    build: ./discord-bot
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      API_URL: http://app:3000
+      API_KEY: ${API_KEY}
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
+  knowledge_files:

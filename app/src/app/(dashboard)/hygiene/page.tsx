@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { items, categories, tags, itemTags, itemRelations } from '@/lib/db/schema'
-import { and, eq, gt, lt, sql } from 'drizzle-orm'
+import { and, eq, gt, lt, sql, inArray } from 'drizzle-orm'
 import { HygieneClient } from './HygieneClient'
 
 const SIMILARITY_THRESHOLD = 0.95
@@ -45,7 +45,7 @@ async function getDuplicates() {
       })
       .from(items)
       .leftJoin(categories, eq(items.categoryId, categories.id))
-      .where(sql`${items.id} = ANY(${allItemIds}::uuid[])`)
+      .where(inArray(items.id, allItemIds))
 
     const itemMap = new Map(itemRows.map((r) => [r.id, r]))
 

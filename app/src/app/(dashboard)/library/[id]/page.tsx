@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { eq, or, sql } from 'drizzle-orm'
+import { eq, or, sql, inArray } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { items, categories, tags, itemTags, itemRelations } from '@/lib/db/schema'
 import { Badge } from '@/components/ui/badge'
@@ -112,7 +112,7 @@ async function getRelatedItems(itemId: string, embedding: number[] | null): Prom
         })
         .from(items)
         .leftJoin(categories, eq(items.categoryId, categories.id))
-        .where(sql`${items.id} = ANY(${relatedIds}::uuid[])`)
+        .where(inArray(items.id, relatedIds))
 
       return neighbourRows.map((row) => {
         const rel = simByNeighbourId.get(row.id) ?? { similarity: 0, relationType: 'related' }

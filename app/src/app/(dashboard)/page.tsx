@@ -1,5 +1,7 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
-import { eq, sql, desc, or, ne, notInArray } from 'drizzle-orm'
+import { eq, sql, desc, or, ne, notInArray, inArray } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { items, categories, tags, itemTags, itemRelations } from '@/lib/db/schema'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -82,7 +84,7 @@ async function getDashboardData() {
         })
         .from(itemTags)
         .innerJoin(tags, eq(itemTags.tagId, tags.id))
-        .where(sql`${itemTags.itemId} = ANY(${recentItemIds}::uuid[])`)
+        .where(inArray(itemTags.itemId, recentItemIds))
       recentItemTags = tagRows
     }
 
@@ -102,7 +104,7 @@ async function getDashboardData() {
       .orderBy(desc(items.createdAt))
       .limit(20)
 
-    return {
+    const result = {
       total: totalRow.count,
       thisWeek: weekRow.count,
       topCategory: topCategoryRows[0] ?? null,
@@ -111,7 +113,10 @@ async function getDashboardData() {
       recentItemTags,
       processingQueue: queueRows,
     }
-  } catch {
+    console.log('[dashboard] data:', JSON.stringify({ total: result.total, thisWeek: result.thisWeek, recentItems: result.recentItems.length }))
+    return result
+  } catch (err) {
+    console.error('[dashboard] getDashboardData error:', err)
     return {
       total: 0,
       thisWeek: 0,
@@ -160,8 +165,8 @@ async function getDiscoverItems(): Promise<DiscoverItem[]> {
       .from(itemRelations)
       .where(
         or(
-          sql`${itemRelations.itemAId} = ANY(${recentIds}::uuid[])`,
-          sql`${itemRelations.itemBId} = ANY(${recentIds}::uuid[])`,
+          inArray(itemRelations.itemAId, recentIds),
+          inArray(itemRelations.itemBId, recentIds),
         )
       )
 
@@ -204,7 +209,7 @@ async function getDiscoverItems(): Promise<DiscoverItem[]> {
         summary: items.summary,
       })
       .from(items)
-      .where(sql`${items.id} = ANY(${neighbourIds}::uuid[])`)
+      .where(inArray(items.id, neighbourIds))
 
     const neighbourById = new Map(neighbourRows.map((r) => [r.id, r]))
     const recentById = new Map(recentItems.map((r) => [r.id, r]))

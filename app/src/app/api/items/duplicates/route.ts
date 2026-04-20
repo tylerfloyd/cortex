@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { and, eq, gt, sql } from 'drizzle-orm';
+import { and, eq, gt, sql, inArray } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { items, categories, itemRelations } from '@/lib/db/schema';
 import { validateApiKey } from '@/lib/auth/api-key';
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     })
     .from(items)
     .leftJoin(categories, eq(items.categoryId, categories.id))
-    .where(sql`${items.id} = ANY(${allItemIds}::uuid[])`);
+    .where(inArray(items.id, allItemIds));
 
   const itemMap = new Map(itemRows.map((r) => [r.id, r]));
 
