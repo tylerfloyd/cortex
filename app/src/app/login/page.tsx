@@ -1,3 +1,5 @@
+import { Input } from '@/components/ui/input'
+
 export const metadata = { title: 'Sign in — Cortex' }
 
 export default async function LoginPage({
@@ -10,29 +12,46 @@ export default async function LoginPage({
   let nextValue = '/';
   if (typeof next === 'string' && next.startsWith('/') && !next.startsWith('//')) {
     try {
-      // Resolve against a dummy base and verify no host was extracted
-      const resolved = new URL(next, 'http://localhost');
+      const resolved = new URL(next, 'http://localhost')
       if (resolved.host === 'localhost') {
-        nextValue = next;
+        nextValue = next
       }
     } catch {
       // malformed — keep '/'
     }
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-sm space-y-6 rounded-xl border border-border bg-card p-8 shadow-sm">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">Cortex</h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your password to continue
-          </p>
-        </div>
+  const showWrongPassword = error === 'wrong'
+  const showRateLimited = error === 'ratelimit'
 
-        {error && (
+  return (
+    <div
+      className="min-h-screen flex flex-col items-center justify-center"
+      style={{
+        background:
+          'radial-gradient(ellipse 80% 50% at 50% 30%, oklch(0.70 0.15 200 / 8%), transparent 60%), var(--background)',
+      }}
+    >
+      {/* Wordmark above card */}
+      <div className="mb-8 text-center">
+        <p className="font-mono text-2xl font-bold tracking-widest text-primary">
+          CORTEX
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Personal knowledge base
+        </p>
+      </div>
+
+      <div className="w-full max-w-sm space-y-6 rounded-xl border border-border bg-card p-8 shadow-2xl">
+        {showWrongPassword && (
           <p className="text-sm text-destructive" role="alert">
             Incorrect password. Please try again.
+          </p>
+        )}
+
+        {showRateLimited && (
+          <p className="text-sm text-destructive" role="alert">
+            Too many attempts — please wait before trying again.
           </p>
         )}
 
@@ -42,20 +61,20 @@ export default async function LoginPage({
             <label htmlFor="password" className="text-sm font-medium">
               Password
             </label>
-            <input
+            <Input
               id="password"
               type="password"
               name="password"
               required
               autoFocus
               autoComplete="current-password"
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-10"
               placeholder="Password"
             />
           </div>
           <button
             type="submit"
-            className="inline-flex h-9 w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex h-10 w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
           >
             Sign in
           </button>
