@@ -24,7 +24,7 @@ Open `~/.claude/settings.json` (global) or `.claude/settings.json` (project-loca
       "args": ["/absolute/path/to/cortex/mcp-server/dist/index.js"],
       "env": {
         "CORTEX_API_URL": "http://localhost:3000",
-        "CORTEX_API_KEY": "your-API_KEY-value"
+        "CORTEX_API_KEY": "your-api-key-here"
       }
     }
   }
@@ -32,11 +32,13 @@ Open `~/.claude/settings.json` (global) or `.claude/settings.json` (project-loca
 ```
 
 Replace `/absolute/path/to/cortex` with the real path — run `pwd` in the repo root to find it.  
-Replace `your-API_KEY-value` with the value of `API_KEY` from your `.env`.
+Replace `your-api-key-here` with the value of `API_KEY` from your `.env`.
 
 **3. Restart Claude Code**
 
 Reload the window or restart the app. Run `/mcp` to verify `cortex` appears in the server list.
+
+> **Note:** Make sure the Cortex app is running at `http://localhost:3000` before using the tools (`npm run dev` in `app/`, or `docker compose up app`).
 
 **Available tools once connected:**
 - `search_knowledge` — semantic search your knowledge base
