@@ -1,46 +1,48 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard,
   BookOpen,
   Inbox,
   Search,
+  Settings2,
   BarChart2,
   Tag,
   ShieldCheck,
-  Settings2,
+  MoreHorizontal,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-type Category = {
-  id: string
-  name: string
-  slug: string
-  itemCount: number
-}
-
 type SidebarProps = {
-  categories: Category[]
+  categories?: unknown[]
   isOpen: boolean
   onClose: () => void
 }
 
-const navLinks: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+const PRIMARY_NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/library', label: 'Library', icon: BookOpen },
   { href: '/inbox', label: 'Inbox', icon: Inbox },
   { href: '/search', label: 'Search', icon: Search },
-  { href: '/analytics', label: 'Analytics', icon: BarChart2 },
-  { href: '/taxonomy', label: 'Taxonomy', icon: Tag },
-  { href: '/hygiene', label: 'Data Hygiene', icon: ShieldCheck },
   { href: '/settings', label: 'Settings', icon: Settings2 },
 ]
 
-export function Sidebar({ categories, isOpen, onClose }: SidebarProps) {
+const SECONDARY_NAV: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: '/analytics', label: 'Analytics', icon: BarChart2 },
+  { href: '/taxonomy', label: 'Taxonomy', icon: Tag },
+  { href: '/hygiene', label: 'Data Hygiene', icon: ShieldCheck },
+]
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const [showMore, setShowMore] = useState(false)
+
+  function isActive(href: string): boolean {
+    if (href === '/library') return pathname.startsWith('/library')
+    return pathname === href || pathname.startsWith(href + '/')
+  }
 
   return (
     <>
@@ -56,7 +58,7 @@ export function Sidebar({ categories, isOpen, onClose }: SidebarProps) {
       {/* Sidebar panel */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-30 flex w-60 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-200',
+          'fixed inset-y-0 left-0 z-30 flex w-56 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-200',
           'md:static md:translate-x-0 md:z-auto',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
@@ -70,57 +72,49 @@ export function Sidebar({ categories, isOpen, onClose }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex flex-col gap-0.5 px-2 py-3">
-          {navLinks.map(({ href, label, icon: Icon }) => {
-            const isActive =
-              href === '/'
-                ? pathname === '/'
-                : pathname === href || pathname.startsWith(href + '/')
+          {PRIMARY_NAV.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={onClose}
+              className={cn(
+                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                isActive(href)
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+              )}
+            >
+              <Icon size={16} aria-hidden="true" />
+              {label}
+            </Link>
+          ))}
 
-            return (
-              <Link
-                key={href}
-                href={href}
-                onClick={onClose}
-                className={cn(
-                  'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
-                    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                )}
-              >
-                <Icon className="size-4 shrink-0" aria-hidden="true" />
-                {label}
-              </Link>
-            )
-          })}
+          {/* More toggle */}
+          <button
+            onClick={() => setShowMore(m => !m)}
+            className="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground hover:text-foreground w-full rounded-md transition-colors"
+          >
+            <MoreHorizontal size={16} />
+            <span>More</span>
+          </button>
+
+          {showMore && SECONDARY_NAV.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={onClose}
+              className={cn(
+                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                isActive(href)
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+              )}
+            >
+              <Icon size={16} aria-hidden="true" />
+              {label}
+            </Link>
+          ))}
         </nav>
-
-        {/* Category quick-filters */}
-        {categories.length > 0 && (
-          <div className="mt-2 flex-1 overflow-y-auto px-2 pb-4">
-            <p className="mb-1.5 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/50">
-              Categories
-            </p>
-            <div className="flex flex-col gap-0.5">
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/library?category=${cat.slug}`}
-                  onClick={onClose}
-                  className={cn(
-                    'flex items-center justify-between rounded-md px-3 py-1.5 text-sm transition-colors',
-                    'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                  )}
-                >
-                  <span className="truncate">{cat.name}</span>
-                  <span className="ml-2 shrink-0 text-xs text-sidebar-foreground/50">
-                    {cat.itemCount}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </aside>
     </>
   )
