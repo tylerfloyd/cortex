@@ -1,33 +1,21 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Menu, Sun, Moon, Monitor, LogOut } from 'lucide-react'
+import { Menu, Sun, Moon, Monitor } from 'lucide-react'
 
 type TopBarProps = {
   onMenuClick: () => void
 }
 
 export function TopBar({ onMenuClick }: TopBarProps) {
-  const router = useRouter()
-  const [query, setQuery] = useState('')
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    const trimmed = query.trim()
-    if (trimmed) {
-      router.push(`/search?q=${encodeURIComponent(trimmed)}`)
-    }
-  }
 
   function cycleTheme() {
     if (theme === 'system') {
@@ -54,7 +42,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
   }
 
   return (
-    <header className="flex h-14 items-center gap-3 border-b border-sidebar-border bg-sidebar px-4">
+    <header className="flex h-12 items-center gap-3 border-b border-sidebar-border bg-sidebar px-4">
       {/* Hamburger — mobile only */}
       <Button
         variant="ghost"
@@ -66,27 +54,15 @@ export function TopBar({ onMenuClick }: TopBarProps) {
         <Menu className="size-5" />
       </Button>
 
-      {/* App name — mobile only */}
-      <span className="font-mono text-sm font-bold tracking-widest text-primary md:hidden">
+      {/* Wordmark */}
+      <span className="font-semibold tracking-widest text-sm uppercase text-primary">
         CORTEX
       </span>
 
-      {/* Global search */}
-      <form
-        onSubmit={handleSearch}
-        className="mx-auto flex w-full max-w-lg items-center"
-      >
-        <Input
-          type="search"
-          placeholder="Search…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="h-10 w-full"
-          aria-label="Global search"
-        />
-      </form>
+      {/* Spacer */}
+      <div className="flex-1" />
 
-      {/* Dark mode toggle */}
+      {/* Theme toggle */}
       <Button
         variant="ghost"
         size="icon"
@@ -96,19 +72,6 @@ export function TopBar({ onMenuClick }: TopBarProps) {
       >
         <ThemeIcon />
       </Button>
-
-      {/* Logout */}
-      <form method="POST" action="/api/auth/logout">
-        <Button
-          type="submit"
-          variant="ghost"
-          size="icon"
-          aria-label="Sign out"
-          title="Sign out"
-        >
-          <LogOut className="size-4" />
-        </Button>
-      </form>
     </header>
   )
 }
