@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   MoreHorizontal,
   LogOut,
+  Newspaper,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -26,6 +27,7 @@ const PRIMARY_NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/library', label: 'Library', icon: BookOpen },
   { href: '/inbox', label: 'Inbox', icon: Inbox },
   { href: '/search', label: 'Search', icon: Search },
+  { href: '/recap', label: 'Recap', icon: Newspaper },
   { href: '/settings', label: 'Settings', icon: Settings2 },
 ]
 
