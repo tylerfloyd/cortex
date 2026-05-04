@@ -12,6 +12,7 @@ import {
   Tag,
   ShieldCheck,
   MoreHorizontal,
+  LogOut,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -70,7 +71,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex flex-col gap-0.5 px-2 py-3">
+        <nav className="flex flex-1 flex-col gap-0.5 px-2 py-3">
           {PRIMARY_NAV.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
@@ -114,6 +115,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </Link>
           ))}
         </nav>
+
+        {/* Logout at bottom of sidebar */}
+        <div className="mt-auto pt-4 border-t border-sidebar-border">
+          <form method="POST" action="/api/auth/logout">
+            <button
+              type="submit"
+              className="flex items-center gap-3 px-3 py-2 w-full text-sm text-muted-foreground hover:text-foreground rounded-md transition-colors"
+            >
+              <LogOut size={16} />
+              <span>Log out</span>
+            </button>
+          </form>
+        </div>
       </aside>
     </>
   )
