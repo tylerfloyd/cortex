@@ -2,6 +2,51 @@
 
 The Cortex MCP (Model Context Protocol) server exposes your knowledge base to Claude Code and other MCP-compatible AI assistants. Once configured, Claude can search, retrieve, and query your saved knowledge directly within a conversation.
 
+## Quick Setup
+
+**1. Build the MCP server**
+
+```bash
+cd mcp-server
+npm install
+npm run build
+```
+
+**2. Add to Claude Code settings**
+
+Open `~/.claude/settings.json` (global) or `.claude/settings.json` (project-local) and add:
+
+```json
+{
+  "mcpServers": {
+    "cortex": {
+      "command": "node",
+      "args": ["/absolute/path/to/cortex/mcp-server/dist/index.js"],
+      "env": {
+        "CORTEX_API_URL": "http://localhost:3000",
+        "CORTEX_API_KEY": "your-API_KEY-value"
+      }
+    }
+  }
+}
+```
+
+Replace `/absolute/path/to/cortex` with the real path — run `pwd` in the repo root to find it.  
+Replace `your-API_KEY-value` with the value of `API_KEY` from your `.env`.
+
+**3. Restart Claude Code**
+
+Reload the window or restart the app. Run `/mcp` to verify `cortex` appears in the server list.
+
+**Available tools once connected:**
+- `search_knowledge` — semantic search your knowledge base
+- `ask_knowledge` — ask a question, get an AI answer grounded in your saved content
+- `list_recent` — see what you've saved recently
+- `get_item` — fetch a specific item by ID
+- `list_categories` — list your categories
+
+---
+
 ## What It Does
 
 The MCP server connects to your running Cortex instance via its API and provides five tools:
