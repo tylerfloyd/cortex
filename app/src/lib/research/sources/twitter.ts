@@ -1,12 +1,11 @@
 export type Tweet = { title: string; url: string; description: string | null }
 
 export async function fetchTwitterTimeline(): Promise<Tweet[]> {
-  const bearerToken = process.env.TWITTER_BEARER_TOKEN
   const accessToken = process.env.TWITTER_USER_ACCESS_TOKEN
   const userId = process.env.TWITTER_USER_ID
 
   // Optional source — silently skip if not configured
-  if (!bearerToken || !accessToken || !userId) return []
+  if (!accessToken || !userId) return []
 
   try {
     const res = await fetch(
