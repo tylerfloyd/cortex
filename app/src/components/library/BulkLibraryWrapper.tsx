@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { SourceIcon } from '@/components/items/SourceIcon'
-import { LibraryListRow } from '@/components/items/LibraryListRow'
 import { BulkActionBar } from '@/components/library/BulkActionBar'
 import { relativeTime, truncateUrl } from '@/lib/format'
 
@@ -194,66 +193,61 @@ export function BulkLibraryWrapper({
           })}
         </div>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-muted/50">
-                  <th className="w-8 px-4 py-2">
-                    {/* select all */}
-                  </th>
-                  <th className="text-left px-4 py-2 font-medium">Title</th>
-                  <th className="text-left px-4 py-2 font-medium hidden sm:table-cell">Source</th>
-                  <th className="text-left px-4 py-2 font-medium hidden md:table-cell">Category</th>
-                  <th className="text-left px-4 py-2 font-medium hidden lg:table-cell">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((item) => {
-                  const displayTitle = item.title ?? truncateUrl(item.url)
-                  const isSelected = selectedIds.has(item.id)
-                  return (
-                    <LibraryListRow key={item.id} href={`/library/${item.id}`}>
-                      <td className="px-4 py-3 w-8">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-border accent-primary"
-                          checked={isSelected}
-                          onChange={() => toggleItem(item.id)}
-                          aria-label={`Select ${displayTitle}`}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <Link
-                          href={`/library/${item.id}`}
-                          className="hover:underline line-clamp-1 font-medium"
-                          onClick={anySelected ? (e) => { e.preventDefault(); toggleItem(item.id) } : undefined}
-                        >
-                          {displayTitle}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3 hidden sm:table-cell">
-                        <SourceIcon sourceType={item.sourceType} showLabel />
-                      </td>
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        {item.categoryName ? (
-                          <Badge variant="secondary" className="text-xs">
-                            {item.categoryName}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground">
-                        {relativeTime(item.createdAt)}
-                      </td>
-                    </LibraryListRow>
-                  )
-                })}
-              </tbody>
-            </table>
-          </CardContent>
+        <Card className="divide-y p-0 overflow-hidden">
+          {rows.map((item) => {
+            const displayTitle = item.title ?? truncateUrl(item.url)
+            const isSelected = selectedIds.has(item.id)
+            return (
+              <div key={item.id} className="relative group flex items-center">
+                {/* Checkbox */}
+                {(anySelected || isSelected) && (
+                  <button
+                    aria-label={isSelected ? 'Deselect item' : 'Select item'}
+                    className="absolute left-2 z-10 h-4 w-4 rounded border border-border bg-background flex items-center justify-center shadow-sm shrink-0"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      toggleItem(item.id)
+                    }}
+                  >
+                    {isSelected && (
+                      <svg
+                        className="h-2.5 w-2.5 text-primary"
+                        fill="currentColor"
+                        viewBox="0 0 12 12"
+                        aria-hidden="true"
+                      >
+                        <path d="M10 3L5 8.5 2 5.5 1 6.5l4 4 6-7z" />
+                      </svg>
+                    )}
+                  </button>
+                )}
+                {!anySelected && (
+                  <button
+                    aria-label="Select item"
+                    className="absolute left-2 z-10 h-4 w-4 rounded border border-border bg-background items-center justify-center shadow-sm hidden group-hover:flex shrink-0"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      toggleItem(item.id)
+                    }}
+                  />
+                )}
+                <Link
+                  href={`/library/${item.id}`}
+                  className={`flex flex-1 items-center gap-3 px-3 py-2.5 hover:bg-accent/50 rounded-md group/row transition-colors min-w-0 ${isSelected ? 'bg-accent/30' : ''} ${anySelected ? 'pl-8' : ''}`}
+                  onClick={anySelected ? (e) => { e.preventDefault(); toggleItem(item.id) } : undefined}
+                >
+                  <SourceIcon sourceType={item.sourceType} className="shrink-0 size-4 text-muted-foreground" />
+                  <span className="flex-1 text-sm truncate group-hover/row:text-primary transition-colors">{displayTitle}</span>
+                  {item.categoryName && (
+                    <Badge variant="secondary" className="text-xs shrink-0">{item.categoryName}</Badge>
+                  )}
+                  <span className="text-xs text-muted-foreground shrink-0 ml-2">{relativeTime(item.createdAt)}</span>
+                </Link>
+              </div>
+            )
+          })}
         </Card>
       )}
 

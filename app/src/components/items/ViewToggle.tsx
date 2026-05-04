@@ -9,6 +9,11 @@ export function ViewToggle({ currentView }: { currentView: 'grid' | 'list' }) {
   const searchParams = useSearchParams()
 
   const setView = (view: 'grid' | 'list') => {
+    try {
+      localStorage.setItem('cortex-library-view', view)
+    } catch {
+      // localStorage may be unavailable in some contexts
+    }
     const params = new URLSearchParams(searchParams.toString())
     params.set('view', view)
     router.push(`${pathname}?${params.toString()}`)

@@ -10,6 +10,39 @@ import { BulkLibraryWrapper } from '@/components/library/BulkLibraryWrapper'
 
 const PAGE_SIZE = 24
 
+async function getLibraryStats() {
+  try {
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+    const [totalRow, thisWeekRow, topCategoryRow] = await Promise.all([
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(items)
+        .where(eq(items.processingStatus, 'completed')),
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(items)
+        .where(and(eq(items.processingStatus, 'completed'), gte(items.createdAt, sevenDaysAgo))),
+      db
+        .select({ name: categories.name, count: sql<number>`count(${items.id})::int` })
+        .from(categories)
+        .innerJoin(items, and(eq(items.categoryId, categories.id), eq(items.processingStatus, 'completed')))
+        .groupBy(categories.id, categories.name)
+        .orderBy(desc(sql`count(${items.id})`))
+        .limit(1),
+    ])
+
+    return {
+      total: totalRow[0]?.count ?? 0,
+      thisWeek: thisWeekRow[0]?.count ?? 0,
+      topCategory: topCategoryRow[0]?.name ?? null,
+    }
+  } catch {
+    return { total: 0, thisWeek: 0, topCategory: null }
+  }
+}
+
 async function getAllTags() {
   try {
     return await db
@@ -204,11 +237,11 @@ export default async function LibraryPage({
   const tagsParam = getString('tags')
   const sortParam = getString('sort') ?? 'newest'
   const pageParam = parseInt(getString('page') ?? '1', 10) || 1
-  const viewParam = (getString('view') ?? 'grid') as 'grid' | 'list'
+  const viewParam = (getString('view') ?? 'list') as 'grid' | 'list'
   const isFavoriteParam = getString('is_favorite') === 'true'
   const dateRangeParam = getString('date_range') ?? 'all'
 
-  const [categoriesWithCounts, allTags, { rows, total, page, pages, tagMap }] = await Promise.all([
+  const [categoriesWithCounts, allTags, { rows, total, page, pages, tagMap }, stats] = await Promise.all([
     getCategoriesWithCounts(),
     getAllTags(),
     getLibraryItems({
@@ -220,6 +253,7 @@ export default async function LibraryPage({
       is_favorite: isFavoriteParam,
       date_range: dateRangeParam,
     }),
+    getLibraryStats(),
   ])
 
   // Build a plain string record for pagination link building
@@ -241,13 +275,21 @@ export default async function LibraryPage({
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Library</h1>
-            <p className="text-sm text-muted-foreground">{total} item{total !== 1 ? 's' : ''}</p>
           </div>
           <div className="flex items-center gap-3">
             {/* Sort */}
             <SortSelector currentSort={sortParam} />
             <ViewToggle currentView={viewParam} />
           </div>
+        </div>
+
+        {/* Stats strip */}
+        <div className="flex items-center gap-6 text-sm text-muted-foreground">
+          <span><strong className="text-foreground font-semibold">{stats.total}</strong> items</span>
+          <span><strong className="text-foreground font-semibold">{stats.thisWeek}</strong> this week</span>
+          {stats.topCategory && (
+            <span>Top: <strong className="text-foreground font-semibold">{stats.topCategory}</strong></span>
+          )}
         </div>
 
         {/* Items */}
