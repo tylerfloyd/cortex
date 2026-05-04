@@ -32,4 +32,9 @@ describe('fetchYouTubeVideos', () => {
     expect(videos).toHaveLength(1)
     expect(videos[0].title).toBe('Recent Video')
   })
+
+  it('returns empty array on network error', async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(new Error('ECONNREFUSED'))
+    expect(await fetchYouTubeVideos('UCfoo')).toEqual([])
+  })
 })

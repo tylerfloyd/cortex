@@ -8,7 +8,10 @@ export type RssPost = {
 
 const parser = new XMLParser({ ignoreAttributes: false, cdataPropName: '__cdata' })
 
+const SUBREDDIT_RE = /^[A-Za-z0-9_]{1,50}$/
+
 export async function fetchRedditPosts(subreddit: string, limit = 25): Promise<RssPost[]> {
+  if (!SUBREDDIT_RE.test(subreddit)) return []
   const url = `https://www.reddit.com/r/${subreddit}/top.rss?t=day&limit=${limit}`
   try {
     const res = await fetch(url, {

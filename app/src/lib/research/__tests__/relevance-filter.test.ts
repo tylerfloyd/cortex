@@ -4,6 +4,7 @@ vi.mock('@/lib/ai/openrouter', () => ({
   chatCompletion: vi.fn().mockResolvedValue(
     JSON.stringify({ score: 8, reason: 'Directly relevant to LLMs' })
   ),
+  getModel: vi.fn().mockResolvedValue('anthropic/claude-haiku-4-5'),
 }))
 
 import { scoreRelevance } from '../relevance-filter'

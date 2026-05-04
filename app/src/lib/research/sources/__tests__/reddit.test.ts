@@ -33,4 +33,14 @@ describe('fetchRedditPosts', () => {
     const posts = await fetchRedditPosts('MachineLearning')
     expect(posts).toEqual([])
   })
+
+  it('returns empty array on network error', async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(new Error('ECONNREFUSED'))
+    expect(await fetchRedditPosts('MachineLearning')).toEqual([])
+  })
+
+  it('returns empty array for invalid subreddit name', async () => {
+    expect(await fetchRedditPosts('../../etc/passwd')).toEqual([])
+    expect(await fetchRedditPosts('bad name!')).toEqual([])
+  })
 })

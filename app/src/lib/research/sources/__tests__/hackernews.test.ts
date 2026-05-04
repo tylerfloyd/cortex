@@ -33,4 +33,9 @@ describe('fetchHackerNewsStories', () => {
     const stories = await fetchHackerNewsStories({ minPoints: 100 })
     expect(stories[0].url).toBe('https://news.ycombinator.com/item?id=3')
   })
+
+  it('returns empty array on network error', async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(new Error('ECONNREFUSED'))
+    expect(await fetchHackerNewsStories()).toEqual([])
+  })
 })

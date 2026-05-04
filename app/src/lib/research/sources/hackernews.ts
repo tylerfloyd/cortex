@@ -1,4 +1,4 @@
-type HnStory = { title: string; url: string; description: string | null }
+export type HnStory = { title: string; url: string; description: string | null }
 
 export async function fetchHackerNewsStories(
   opts: { minPoints?: number; limit?: number } = {}
