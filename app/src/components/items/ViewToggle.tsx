@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 
@@ -7,6 +8,21 @@ export function ViewToggle({ currentView }: { currentView: 'grid' | 'list' }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (!params.has('view')) {
+      try {
+        const stored = localStorage.getItem('cortex-library-view')
+        if (stored === 'grid' || stored === 'list') {
+          params.set('view', stored)
+          router.replace(`${window.location.pathname}?${params.toString()}`)
+        }
+      } catch {
+        // localStorage unavailable (SSR guard)
+      }
+    }
+  }, []) // run once on mount
 
   const setView = (view: 'grid' | 'list') => {
     try {
