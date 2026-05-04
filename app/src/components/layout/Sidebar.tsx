@@ -17,7 +17,6 @@ import {
 import { cn } from '@/lib/utils'
 
 type SidebarProps = {
-  categories?: unknown[]
   isOpen: boolean
   onClose: () => void
 }

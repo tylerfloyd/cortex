@@ -4,19 +4,11 @@ import { useState } from 'react'
 import { Sidebar } from './Sidebar'
 import { TopBar } from './TopBar'
 
-type Category = {
-  id: string
-  name: string
-  slug: string
-  itemCount: number
-}
-
 type DashboardShellProps = {
-  categories: Category[]
   children: React.ReactNode
 }
 
-export function DashboardShell({ categories, children }: DashboardShellProps) {
+export function DashboardShell({ children }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
@@ -24,7 +16,6 @@ export function DashboardShell({ categories, children }: DashboardShellProps) {
       <TopBar onMenuClick={() => setSidebarOpen((open) => !open)} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
-          categories={categories}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
