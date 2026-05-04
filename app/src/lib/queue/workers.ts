@@ -1,4 +1,4 @@
-import { Worker, type Job } from 'bullmq';
+import { Worker, Queue, type Job } from 'bullmq';
 import { eq, desc, sql, getTableColumns } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { items, jobLog, categories, tags, itemTags, itemRelations } from '@/lib/db/schema';
@@ -182,6 +182,29 @@ async function populateItemRelations(itemId: string, embeddingVector: number[]):
     console.warn('[embedder] Failed to populate item_relations:', err);
   }
 }
+
+// ---------------------------------------------------------------------------
+// research-agent worker + daily scheduler
+// ---------------------------------------------------------------------------
+
+export const researchAgentWorker = new Worker(
+  'research-agent',
+  async () => {
+    const { runResearchAgent } = await import('@/lib/research/agent')
+    console.log('[research-agent] starting run')
+    const summary = await runResearchAgent()
+    console.log('[research-agent] done:', summary)
+  },
+  { connection: redisConnection }
+)
+
+// Register daily cron — idempotent (jobId deduplicates across restarts)
+const researchCron = process.env.RESEARCH_CRON ?? '0 6 * * *'
+const researchQueue = new Queue('research-agent', { connection: redisConnection })
+researchQueue
+  .add('daily-run', {}, { repeat: { pattern: researchCron }, jobId: 'research-agent-daily' })
+  .then(() => console.log(`[research-agent] scheduled: ${researchCron}`))
+  .catch((err) => console.error('[research-agent] failed to schedule:', err))
 
 // ---------------------------------------------------------------------------
 // content-extraction worker
