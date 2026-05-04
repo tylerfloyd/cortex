@@ -36,6 +36,15 @@ AUTH_SECRET        ≥32 chars, signs HMAC session cookies
 AUTH_PASSWORD      password for dashboard login
 ```
 
+## Optional Env Vars
+
+```
+TWITTER_BEARER_TOKEN       Twitter API v2 Bearer Token (research agent, optional)
+TWITTER_USER_ACCESS_TOKEN  OAuth 2.0 user access token for home timeline (optional)
+TWITTER_USER_ID            Your Twitter numeric user ID (optional)
+RESEARCH_CRON              Cron schedule for research agent (default: "0 6 * * *" = 6am daily)
+```
+
 ## Gotchas
 
 - **BullMQ Redis**: BullMQ bundles its own `ioredis` — do NOT pass a project-level `ioredis` instance. The queue connection is a plain `ConnectionOptions` object parsed from `REDIS_URL`.
