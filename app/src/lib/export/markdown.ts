@@ -143,7 +143,15 @@ export async function deleteItemMarkdown(filePath: string): Promise<void> {
  * markdown files need to be relocated to match the updated category slug.
  */
 export async function moveItemMarkdown(oldPath: string, newPath: string): Promise<void> {
-  const newDir = path.dirname(newPath);
+  const resolvedBase = path.resolve(KNOWLEDGE_DIR) + path.sep;
+  const resolvedOld = path.resolve(oldPath);
+  const resolvedNew = path.resolve(newPath);
+
+  if (!resolvedOld.startsWith(resolvedBase) || !resolvedNew.startsWith(resolvedBase)) {
+    throw new Error('Path must be within KNOWLEDGE_DIR');
+  }
+
+  const newDir = path.dirname(resolvedNew);
   await fs.mkdir(newDir, { recursive: true });
-  await fs.rename(oldPath, newPath);
+  await fs.rename(resolvedOld, resolvedNew);
 }
