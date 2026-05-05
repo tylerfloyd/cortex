@@ -36,6 +36,9 @@ app/knowledge/_index.json
 *.sql.gz
 cortex_export*
 
+# Drizzle migration SQL files are committed
+!app/drizzle/*.sql
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
@@ -72,3 +75,4 @@ app/drizzle/*.snap
 
 # Misc
 .turbo
+.worktrees/
