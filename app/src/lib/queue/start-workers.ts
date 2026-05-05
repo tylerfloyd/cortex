@@ -3,6 +3,7 @@ import {
   aiProcessingWorker,
   embeddingWorker,
   markdownExportWorker,
+  researchAgentWorker,
 } from './workers';
 import { startMarkdownSync } from '@/lib/export/sync';
 
@@ -11,6 +12,7 @@ const workers = [
   aiProcessingWorker,
   embeddingWorker,
   markdownExportWorker,
+  researchAgentWorker,
 ];
 
 // Log worker lifecycle events

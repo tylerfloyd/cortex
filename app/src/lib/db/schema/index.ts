@@ -4,3 +4,6 @@ export * from './items';
 export * from './item-tags';
 export * from './item-relations';
 export * from './job-log';
+export * from './research-sources';
+export * from './research-runs';
+export * from './weekly-recaps';

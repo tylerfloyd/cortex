@@ -5,6 +5,7 @@ import { DownloadIcon, UploadIcon, AlertTriangleIcon, RefreshCwIcon } from 'luci
 import { Button } from '@/components/ui/button'
 import { updateModelSettings, updateApiKeys } from './actions'
 import type { AppConfig } from '@/lib/config'
+import { ResearchAgentSection } from './ResearchAgentSection'
 
 const AVAILABLE_MODELS = [
   'anthropic/claude-sonnet-4-5',
@@ -429,6 +430,11 @@ export function SettingsClient({ initialModels, apiKeysConfigured, discordConfig
             </Button>
           </div>
         </div>
+      </Section>
+
+      {/* Research Agent */}
+      <Section title="Research Agent">
+        <ResearchAgentSection />
       </Section>
 
       {/* Danger Zone */}
