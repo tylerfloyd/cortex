@@ -32,6 +32,8 @@ jobs:
           file: ./app/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/cortex-app:latest
+          build-args: |
+            NEXT_PUBLIC_API_KEY=${{ secrets.API_KEY }}
           cache-from: type=gha,scope=app
           cache-to: type=gha,mode=max,scope=app
 
