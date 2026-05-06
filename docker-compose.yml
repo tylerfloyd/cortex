@@ -51,6 +51,7 @@ services:
         condition: service_healthy
     volumes:
       - knowledge_files:/app/knowledge
+      - app_data:/app/data
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
       interval: 30s
@@ -73,3 +74,4 @@ volumes:
   pgdata:
   redisdata:
   knowledge_files:
+  app_data:
