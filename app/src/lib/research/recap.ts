@@ -77,7 +77,8 @@ Only include item IDs from the list above for topPickIds. Return at most 5 top p
       .returning()
 
     return recap
-  } catch {
+  } catch (err) {
+    console.error('[recap] Failed to generate or save recap:', err)
     return null
   }
 }
