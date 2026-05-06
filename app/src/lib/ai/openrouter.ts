@@ -132,6 +132,9 @@ export async function chatCompletion(
   if (content == null) {
     throw new Error('OpenRouter returned no content in response');
   }
+  if (jsonMode) {
+    return content.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
+  }
   return content;
 }
 
