@@ -1,0 +1,27 @@
+# Dependabot configuration — repository-level (takes precedence over any
+# account-level configuration for this repo).
+#
+# auto-merge: dependabot marks its own PRs for auto-merge and, once checks
+# pass and the branch is up to date, merges them as dependabot[bot]. That
+# account is a "pull request" bypass actor on the default branch ruleset, so
+# the required-review rule does not block these merges. Human PRs still need
+# review + CI as usual.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/app"
+    schedule:
+      interval: "daily"
+    auto-merge: true
+
+  - package-ecosystem: "npm"
+    directory: "/mcp-server"
+    schedule:
+      interval: "daily"
+    auto-merge: true
+
+  - package-ecosystem: "npm"
+    directory: "/discord-bot"
+    schedule:
+      interval: "daily"
+    auto-merge: true
