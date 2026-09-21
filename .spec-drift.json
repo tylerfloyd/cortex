@@ -1,0 +1,5 @@
+{
+  "specFiles": ["docs/architecture.md", "docs/api-reference.md"],
+  "blockOnDrift": false,
+  "maxSpecChars": 56000
+}

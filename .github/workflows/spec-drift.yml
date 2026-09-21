@@ -1,0 +1,32 @@
+name: Spec Drift
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  spec-drift:
+    # Fork pull requests receive no repository secrets, so the bot cannot reach
+    # the API and would fail closed on every outside contribution. Review those
+    # by hand instead.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write
+    # Pinned: the workflow ref and bot-ref must be the SAME reviewed commit, so
+    # the workflow and the executable it runs cannot drift apart.
+    uses: tylerfloyd/spec-drift/.github/workflows/spec-drift.yml@be991c16760f5c82b8940ccabeb05f2f8bd4e85c
+    secrets:
+      TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+    with:
+      bot-ref: be991c16760f5c82b8940ccabeb05f2f8bd4e85c
+      owner: ${{ github.event.pull_request.base.repo.owner.login }}
+      repo: ${{ github.event.pull_request.base.repo.name }}
+      pr-number: ${{ github.event.pull_request.number }}
+      base: ${{ github.event.pull_request.base.sha }}
+      head: ${{ github.event.pull_request.head.sha }}
+      pr-title: ${{ github.event.pull_request.title }}
+      pr-desc: ${{ github.event.pull_request.body }}
+      # spec-glob and block are deliberately omitted so .spec-drift.json is the
+      # single source of truth. Passing either here becomes a CLI flag, which
+      # outranks the file.
